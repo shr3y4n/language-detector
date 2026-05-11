@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Language Detector</title>
+    <title>Programming Language Detector</title>
 
     <style>
         body {
             background: #0f172a;
             color: white;
-            font-family: Arial;
+            font-family: Arial, sans-serif;
             text-align: center;
             padding: 40px;
         }
@@ -22,17 +22,18 @@
             height: 180px;
             margin-top: 20px;
             padding: 12px;
-            border-radius: 8px;
+            border-radius: 10px;
             border: none;
             font-size: 15px;
+            background: #1e293b;
+            color: white;
         }
 
         .upload-box {
-            margin-top: 20px;
-            padding: 20px;
-            border: 2px solid #38bdf8;
-            border-radius: 10px;
+            margin-top: 25px;
+            padding: 25px;
             background: #1e293b;
+            border-radius: 12px;
         }
 
         input[type="file"] {
@@ -42,14 +43,14 @@
 
         button {
             margin-top: 25px;
-            padding: 12px 25px;
+            padding: 12px 24px;
             background: #38bdf8;
             color: black;
             border: none;
             border-radius: 8px;
             cursor: pointer;
+            font-size: 16px;
             font-weight: bold;
-            font-size: 15px;
         }
 
         button:hover {
@@ -60,6 +61,10 @@
             margin-top: 30px;
             font-size: 22px;
         }
+
+        p {
+            color: #cbd5e1;
+        }
     </style>
 </head>
 
@@ -69,16 +74,17 @@
 
     <h1>🚀 Programming Language Detector</h1>
 
-    <p>Paste your source code or upload a file</p>
+    <p>Paste your code below or upload a source code file.</p>
 
     <textarea id="code" placeholder="Paste your code here..."></textarea>
 
     <div class="upload-box">
         <h3>Upload Source Code File</h3>
-        <input type="file" id="fileInput">
+
+        <input type="file" id="fileInput" accept=".py,.cpp,.c,.java,.js,.ts,.go,.rs,.php">
     </div>
 
-    <button onclick="detect()">Detect Language</button>
+    <button onclick="detectLanguage()">Detect Language</button>
 
     <h2 id="result"></h2>
 
@@ -86,9 +92,9 @@
 
 <script>
 
-async function detect() {
+async function detectLanguage() {
 
-    let formData = new FormData();
+    const formData = new FormData();
 
     const fileInput = document.getElementById("fileInput");
 
@@ -96,16 +102,16 @@ async function detect() {
         formData.append("file", fileInput.files[0]);
     }
     else {
-        let code = document.getElementById("code").value;
+        const code = document.getElementById("code").value;
         formData.append("code", code);
     }
 
-    let response = await fetch("/predict", {
+    const response = await fetch("/predict", {
         method: "POST",
         body: formData
     });
 
-    let data = await response.json();
+    const data = await response.json();
 
     document.getElementById("result").innerText =
         "Detected Language: " + data.language +
