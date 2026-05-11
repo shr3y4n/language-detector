@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Language Detector</title>
+
     <style>
         body {
             background: #0f172a;
@@ -11,82 +12,106 @@
             padding: 40px;
         }
 
-        .box {
-            border: 2px dashed #38bdf8;
-            padding: 40px;
-            margin: 20px auto;
-            width: 60%;
-            border-radius: 10px;
+        .container {
+            width: 70%;
+            margin: auto;
         }
 
         textarea {
-            width: 60%;
-            height: 150px;
+            width: 100%;
+            height: 180px;
             margin-top: 20px;
-            padding: 10px;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            font-size: 15px;
+        }
+
+        .upload-box {
+            margin-top: 20px;
+            padding: 20px;
+            border: 2px solid #38bdf8;
+            border-radius: 10px;
+            background: #1e293b;
+        }
+
+        input[type="file"] {
+            margin-top: 10px;
+            color: white;
         }
 
         button {
-            margin-top: 20px;
-            padding: 10px 20px;
+            margin-top: 25px;
+            padding: 12px 25px;
             background: #38bdf8;
+            color: black;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
+            font-weight: bold;
+            font-size: 15px;
+        }
+
+        button:hover {
+            background: #0ea5e9;
+        }
+
+        #result {
+            margin-top: 30px;
+            font-size: 22px;
         }
     </style>
 </head>
 
 <body>
 
-<h1>🚀 Language Detector</h1>
+<div class="container">
 
-<div class="box" id="dropArea">
-    Drag & Drop File Here
+    <h1>🚀 Programming Language Detector</h1>
+
+    <p>Paste your source code or upload a file</p>
+
+    <textarea id="code" placeholder="Paste your code here..."></textarea>
+
+    <div class="upload-box">
+        <h3>Upload Source Code File</h3>
+        <input type="file" id="fileInput">
+    </div>
+
+    <button onclick="detect()">Detect Language</button>
+
+    <h2 id="result"></h2>
+
 </div>
 
-<textarea id="code" placeholder="Or paste code here..."></textarea><br>
-
-<button onclick="detect()">Detect</button>
-
-<h2 id="result"></h2>
-
 <script>
-let droppedFile = null;
-
-const dropArea = document.getElementById("dropArea");
-
-dropArea.addEventListener("drop", function(e) {
-    e.preventDefault();
-    droppedFile = e.dataTransfer.files[0];
-    dropArea.innerText = droppedFile.name;
-});
-
-dropArea.addEventListener("dragover", function(e) {
-    e.preventDefault();
-});
 
 async function detect() {
+
     let formData = new FormData();
 
-    if (droppedFile) {
-        formData.append("file", droppedFile);
-    } else {
+    const fileInput = document.getElementById("fileInput");
+
+    if (fileInput.files.length > 0) {
+        formData.append("file", fileInput.files[0]);
+    }
+    else {
         let code = document.getElementById("code").value;
         formData.append("code", code);
     }
 
-    let res = await fetch("/predict", {
+    let response = await fetch("/predict", {
         method: "POST",
         body: formData
     });
 
-    let data = await res.json();
+    let data = await response.json();
 
     document.getElementById("result").innerText =
-        "Language: " + data.language +
-        " | Confidence: " + (data.confidence || "N/A");
+        "Detected Language: " + data.language +
+        "\nConfidence: " + (data.confidence || "N/A");
 }
+
 </script>
 
 </body>
