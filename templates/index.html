@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Language Detector</title>
+    <style>
+        body {
+            background: #0f172a;
+            color: white;
+            font-family: Arial;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .box {
+            border: 2px dashed #38bdf8;
+            padding: 40px;
+            margin: 20px auto;
+            width: 60%;
+            border-radius: 10px;
+        }
+
+        textarea {
+            width: 60%;
+            height: 150px;
+            margin-top: 20px;
+            padding: 10px;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #38bdf8;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>🚀 Language Detector</h1>
+
+<div class="box" id="dropArea">
+    Drag & Drop File Here
+</div>
+
+<textarea id="code" placeholder="Or paste code here..."></textarea><br>
+
+<button onclick="detect()">Detect</button>
+
+<h2 id="result"></h2>
+
+<script>
+let droppedFile = null;
+
+const dropArea = document.getElementById("dropArea");
+
+dropArea.addEventListener("drop", function(e) {
+    e.preventDefault();
+    droppedFile = e.dataTransfer.files[0];
+    dropArea.innerText = droppedFile.name;
+});
+
+dropArea.addEventListener("dragover", function(e) {
+    e.preventDefault();
+});
+
+async function detect() {
+    let formData = new FormData();
+
+    if (droppedFile) {
+        formData.append("file", droppedFile);
+    } else {
+        let code = document.getElementById("code").value;
+        formData.append("code", code);
+    }
+
+    let res = await fetch("/predict", {
+        method: "POST",
+        body: formData
+    });
+
+    let data = await res.json();
+
+    document.getElementById("result").innerText =
+        "Language: " + data.language +
+        " | Confidence: " + (data.confidence || "N/A");
+}
+</script>
+
+</body>
+</html>
